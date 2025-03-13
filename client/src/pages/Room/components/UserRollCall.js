@@ -87,7 +87,7 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
       const number = window.requestAnimationFrame(() => { });
       window.cancelAnimationFrame(number);
     }
-  }, [])
+  }, [video, scanQrFromVideo])
 
 
   return (

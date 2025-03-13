@@ -104,7 +104,7 @@ export default function Room() {
     return () => {
       subscribed = false
     };
-  }, [])
+  },  [roomid, navigate, setRoom, setLoading, user.jwt_token, user.fname, user.emoji, setUser])
 
   if (loading) return <DummyPage />
   return (

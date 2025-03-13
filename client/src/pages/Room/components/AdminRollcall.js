@@ -72,7 +72,7 @@ export default function AdminRollcall({ room_id, rollcall, allParticipants, setR
             socket.off("qr-code-update", updateQR);
             socket.off("user-scanned", addUser)
         }
-    }, [])
+    }, [getRemTime, allParticipants, setTimer, setAttendees, room_id, updateQR])
 
     return (
         <>

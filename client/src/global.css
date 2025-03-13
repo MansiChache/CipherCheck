@@ -213,7 +213,7 @@ nav button:focus-within .menu {
   animation: model-pop-in 400ms forwards;
   display: flex;
   flex-direction: column;
-  justify-content: start;
+  justify-content: flex-start;
   transition: height 400ms;
 }
 

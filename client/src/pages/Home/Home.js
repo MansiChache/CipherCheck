@@ -30,7 +30,7 @@ export default function Home() {
         setRequestLoader(false);
         setUser(null);
       });
-  }, [])
+  }, [user.jwt_token, user.fname, user.emoji, setRooms, setRequestLoader, setUser])
 
   const createRoom = () => setModelElement(() => <CreateRoom user={user} setRooms={setRooms} modelTitle="Create Room" closeModel={() => setModelElement(null)} />);
   const joinRoom = () => setModelElement(() => <JoinRoom user={user} setRooms={setRooms} modelTitle="Join Room" closeModel={() => setModelElement(null)} />);

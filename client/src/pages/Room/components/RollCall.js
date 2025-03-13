@@ -19,7 +19,7 @@ export default function RollCall({ room, user }) {
             .catch(err => {
                 console.log(err);
             });
-    }, [])
+    }, [room._id, user.jwt_token])
 
 
     function handleSubmit(e) {

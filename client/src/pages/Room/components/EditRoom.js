@@ -12,7 +12,7 @@ export default function EditRoom({ room, user, setRoom, closeModel }) {
         formRef.current.bgImgUrl.value = room.bgImgUrl || "";
         formRef.current.description.value = room.description || "";
         formRef.current['restrictJoin'].checked = room.restrictJoin;
-    }, [])
+    }, [room])
 
 
     function handleSubmit(e) {
