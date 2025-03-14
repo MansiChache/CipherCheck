@@ -18,7 +18,7 @@
     "env": {
       "ENVIRONMENT": "PROD",
       "PORT": "3000",
-      "MONGO_URL": "@mongo_url"
+      "MONGO_URL": "process.env.MONGO_URL"
     }
   }
   
