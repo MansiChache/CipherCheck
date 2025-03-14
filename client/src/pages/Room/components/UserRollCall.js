@@ -17,6 +17,11 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
     return code;
   }
 
+  const sendQrCheck = useCallback((code) => {
+    setScanning("SENDING CODE TO SERVER");
+    return FETCH(`/rollcall/scan/${room_id}/${code}`, "GET", user_token, null);
+  }, [room_id, user_token]);
+
   const scanQrFromVideo = useCallback(() => {
     if (!video.current) return requestAnimationFrame(scanQrFromVideo);
     const code = getQrFromElement(video.current, video.current.videoWidth, video.current.videoHeight);
@@ -24,16 +29,13 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
     sendQrCheck(code.data)
       .then(res => {
         if (res.response === "fail") throw res.message;
-        setRollCall(pre => {
-          pre.attended = true;
-          return { ...pre };
-        })
+        setRollCall(pre => ({ ...pre, attended: true }));
       })
       .catch(err => {
         setScanning(err);
         requestAnimationFrame(scanQrFromVideo);
       });
-  }, [setRollCall]); // `scanQrFromVideo` is now stable across renders
+  }, [sendQrCheck, setRollCall]); // Now includes `sendQrCheck`
 
   function scanQrFromFile(e) {
     const input = e.target;
@@ -52,21 +54,13 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
       sendQrCheck(code.data)
         .then(res => {
           if (res.response === "fail") throw res.message;
-          setRollCall(pre => {
-            pre.attended = true;
-            return { ...pre };
-          })
+          setRollCall(pre => ({ ...pre, attended: true }));
         })
         .catch(err => {
           setScanning(err);
           input.disabled = false;
         });
-    }
-  }
-
-  function sendQrCheck(code) {
-    setScanning("SENDING CODE TO SERVER");
-    return FETCH(`/rollcall/scan/${room_id}/${code}`, "GET", user_token, null);
+    };
   }
 
   useEffect(() => {
@@ -86,7 +80,7 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
       const number = window.requestAnimationFrame(() => { });
       window.cancelAnimationFrame(number);
     };
-  }, [scanQrFromVideo]); // Only re-run when `scanQrFromVideo` changes
+  }, [scanQrFromVideo]); // `scanQrFromVideo` is stable now
 
   return (
     <>
