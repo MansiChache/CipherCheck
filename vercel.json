@@ -8,12 +8,17 @@
       {
         "src": "client/",
         "use": "@vercel/static-build",
-        "config": { "distDir": "build" }
+        "config": { "distDir": "client/build" }
       }
     ],
     "routes": [
       { "src": "/api/(.*)", "dest": "server/index.js" },
       { "src": "/(.*)", "dest": "client/build/index.html" }
-    ]
+    ],
+    "env": {
+      "ENVIRONMENT": "PROD",
+      "PORT": "3000",
+      "MONGO_URL": "@mongo_url"
+    }
   }
   
