@@ -2,6 +2,7 @@
     "name": "qr-attendance",
     "version": "1.0.0",
     "main": "",
+    "homepage": ".",
     "scripts": {
         "start": "npm start --prefix server",
         "install-client": "cd client && npm install && npm run build && cd ..",
