@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import jsQR from 'jsqr';
 import { FETCH } from "../../../utils";
 
@@ -17,7 +17,7 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
     return code;
   }
 
-  function scanQrFromVideo() {
+  const scanQrFromVideo = useCallback(() => {
     if (!video.current) return requestAnimationFrame(scanQrFromVideo);
     const code = getQrFromElement(video.current, video.current.videoWidth, video.current.videoHeight);
     if (!code || !code.data) return requestAnimationFrame(scanQrFromVideo);
@@ -32,8 +32,8 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
       .catch(err => {
         setScanning(err);
         requestAnimationFrame(scanQrFromVideo);
-      })
-  }
+      });
+  }, [setRollCall]); // `scanQrFromVideo` is now stable across renders
 
   function scanQrFromFile(e) {
     const input = e.target;
@@ -60,7 +60,7 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
         .catch(err => {
           setScanning(err);
           input.disabled = false;
-        })
+        });
     }
   }
 
@@ -68,7 +68,6 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
     setScanning("SENDING CODE TO SERVER");
     return FETCH(`/rollcall/scan/${room_id}/${code}`, "GET", user_token, null);
   }
-
 
   useEffect(() => {
     let video_stream = null;
@@ -79,26 +78,25 @@ export default function UserRollCall({ room_id, user_token, setRollCall }) {
         video.current.onloadedmetadata = () => {
           video.current.play();
           window.requestAnimationFrame(scanQrFromVideo);
-        }
-      })
+        };
+      });
 
     return () => {
-      video_stream?.getTracks().forEach(track => track.stop())
+      video_stream?.getTracks().forEach(track => track.stop());
       const number = window.requestAnimationFrame(() => { });
       window.cancelAnimationFrame(number);
-    }
-  }, [video, scanQrFromVideo])
-
+    };
+  }, [scanQrFromVideo]); // Only re-run when `scanQrFromVideo` changes
 
   return (
     <>
-      <p className='scanned-text' >{scanning} &nbsp;</p>
-      <video src="" className='video-scanning-stream' ref={video}></video>
+      <p className='scanned-text'>{scanning} &nbsp;</p>
+      <video className='video-scanning-stream' ref={video}></video>
       <p className='video-or-image'>or</p>
-      <label className='default-button choose-image' placeholder='Choose image' >
+      <label className='default-button choose-image' placeholder='Choose image'>
         <p>Scan from Image</p>
         <input className='input-file-for-qr' onChange={scanQrFromFile} type="file" />
       </label>
     </>
-  )
+  );
 }
