@@ -14,9 +14,8 @@ if (isDEV) {
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
-const server = require("http").createServer(app);
 const path = require("path");
-const io = require("socket.io")(server, socketCORS);
+const io = require("socket.io")(); // Removed server from socket.io, as Vercel does not use an explicit server
 
 mongoose
   .connect(process.env.MONGO_URL)
@@ -34,6 +33,7 @@ app.use(express.static(path.join(__dirname, "..", "client", "build")));
 
 module.exports.io = io;
 
+// API route for checking server status
 app.get("/api", (req, res) => {
   res.json({
     response: "ok",
@@ -49,10 +49,11 @@ app.use("/api/my", require("./routes/my"));
 app.use("/api/rooms", require("./routes/rooms"));
 app.use("/api/rollcall", require("./routes/rollcall"));
 
+// Catch-all route to serve frontend
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "client", "build", "index.html"));
 });
 
-server.listen(process.env.PORT, () =>
-  console.log("Server Running on http://localhost:" + process.env.PORT)
-);
+// ! CHANGED: Removed explicit server.listen() because Vercel handles routing automatically
+// Instead, we export `app` for Vercel compatibility
+module.exports = app;
